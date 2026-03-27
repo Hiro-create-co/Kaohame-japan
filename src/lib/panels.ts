@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { Panel } from "@/types";
+import type { Panel, PanelPhoto } from "@/types";
 
 export async function getPanels(): Promise<Panel[]> {
   const { data, error } = await supabase
@@ -45,7 +45,7 @@ export async function getPanelsByPrefecture(
 }
 
 export async function addPanel(
-  panel: Omit<Panel, "id" | "created_at">
+  panel: Omit<Panel, "id" | "created_at" | "like_count">
 ): Promise<Panel | null> {
   const { data, error } = await supabase
     .from("panels")
@@ -58,6 +58,143 @@ export async function addPanel(
     return null;
   }
   return data;
+}
+
+// ---------- Photo functions ----------
+
+export async function uploadPhoto(
+  panelId: string,
+  file: File,
+  userName: string
+): Promise<PanelPhoto | null> {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  const filePath = `${panelId}/${timestamp}-${random}.jpg`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("panel-photos")
+    .upload(filePath, file, { contentType: file.type });
+
+  if (uploadError) {
+    console.error("Error uploading photo:", uploadError);
+    return null;
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("panel-photos").getPublicUrl(filePath);
+
+  const { data, error } = await supabase
+    .from("panel_photos")
+    .insert({
+      panel_id: panelId,
+      image_url: publicUrl,
+      user_name: userName || "匿名",
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error saving photo record:", error);
+    return null;
+  }
+  return data;
+}
+
+export async function getPhotosByPanel(
+  panelId: string
+): Promise<PanelPhoto[]> {
+  const { data, error } = await supabase
+    .from("panel_photos")
+    .select("*")
+    .eq("panel_id", panelId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching photos:", error);
+    return [];
+  }
+  return data || [];
+}
+
+// ---------- Like functions ----------
+
+const LIKES_KEY = "kaohame_likes";
+
+function getLikedPanelIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(LIKES_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setLikedPanelIds(ids: string[]) {
+  localStorage.setItem(LIKES_KEY, JSON.stringify(ids));
+}
+
+export function isPanelLiked(panelId: string): boolean {
+  return getLikedPanelIds().includes(panelId);
+}
+
+export async function likePanel(panelId: string): Promise<number | null> {
+  const { data, error } = await supabase.rpc("increment_like", {
+    row_id: panelId,
+  });
+
+  // Fallback: if RPC doesn't exist, do a manual update
+  if (error) {
+    const { data: panel } = await supabase
+      .from("panels")
+      .select("like_count")
+      .eq("id", panelId)
+      .single();
+
+    const newCount = (panel?.like_count || 0) + 1;
+    const { error: updateError } = await supabase
+      .from("panels")
+      .update({ like_count: newCount })
+      .eq("id", panelId);
+
+    if (updateError) {
+      console.error("Error liking panel:", updateError);
+      return null;
+    }
+
+    const ids = getLikedPanelIds();
+    ids.push(panelId);
+    setLikedPanelIds(ids);
+    return newCount;
+  }
+
+  const ids = getLikedPanelIds();
+  ids.push(panelId);
+  setLikedPanelIds(ids);
+  return data;
+}
+
+export async function unlikePanel(panelId: string): Promise<number | null> {
+  const { data: panel } = await supabase
+    .from("panels")
+    .select("like_count")
+    .eq("id", panelId)
+    .single();
+
+  const newCount = Math.max((panel?.like_count || 0) - 1, 0);
+  const { error } = await supabase
+    .from("panels")
+    .update({ like_count: newCount })
+    .eq("id", panelId);
+
+  if (error) {
+    console.error("Error unliking panel:", error);
+    return null;
+  }
+
+  const ids = getLikedPanelIds().filter((id) => id !== panelId);
+  setLikedPanelIds(ids);
+  return newCount;
 }
 
 // Calculate distance between two coordinates in km

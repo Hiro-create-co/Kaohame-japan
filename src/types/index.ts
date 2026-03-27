@@ -7,6 +7,7 @@ export interface Panel {
   prefecture: string;
   image_url: string | null;
   contributor_name: string;
+  like_count: number;
   created_at: string;
 }
 
