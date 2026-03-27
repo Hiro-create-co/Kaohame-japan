@@ -29,19 +29,19 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="flex flex-1 flex-col">
-      {/* Header */}
-      <header className="relative z-10 bg-white/95 backdrop-blur-sm px-4 py-3 shadow-sm">
-        <h1 className="text-center text-lg font-bold text-rose-600">
+    <div className="relative flex flex-1 flex-col" style={{ minHeight: "calc(100dvh - 4rem)" }}>
+      {/* Header - overlay on map */}
+      <header className="absolute left-0 right-0 top-0 z-[1000] bg-white/90 backdrop-blur-sm px-4 py-2 shadow-sm">
+        <h1 className="text-center text-base font-bold text-rose-600">
           カオハメJAPAN
         </h1>
-        <p className="text-center text-xs text-gray-500">
+        <p className="text-center text-[10px] text-gray-500">
           全国の顔ハメパネルを制覇しよう！
         </p>
       </header>
 
-      {/* Map */}
-      <div className="relative flex-1">
+      {/* Map - full height */}
+      <div className="absolute inset-0">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
@@ -78,11 +78,11 @@ export default function HomePage() {
             zoom={latitude ? 10 : 5}
           />
         )}
+      </div>
 
-        {/* Panel count badge */}
-        <div className="absolute left-3 top-3 z-[1000] rounded-full bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-md">
-          {panels.length} 件のパネル
-        </div>
+      {/* Panel count badge */}
+      <div className="absolute left-3 top-14 z-[1000] rounded-full bg-white/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-gray-700 shadow-md">
+        {panels.length} 件のパネル
       </div>
     </div>
   );
