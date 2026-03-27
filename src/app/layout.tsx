@@ -11,6 +11,7 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kaohame-japan.vercel.app"),
   title: "カオハメJAPAN",
   description: "47都道府県の顔ハメパネルを制覇しよう！",
   manifest: "/manifest.json",
@@ -18,6 +19,18 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "カオハメJAPAN",
+  },
+  openGraph: {
+    title: "カオハメJAPAN",
+    description: "47都道府県の顔ハメパネルを制覇しよう！",
+    siteName: "カオハメJAPAN",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "カオハメJAPAN",
+    description: "47都道府県の顔ハメパネルを制覇しよう！",
   },
 };
 

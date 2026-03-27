@@ -1,4 +1,4 @@
-const CACHE_NAME = "kaohame-v2";
+const CACHE_NAME = "kaohame-v3";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
