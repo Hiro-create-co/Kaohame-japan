@@ -28,6 +28,7 @@ interface MapViewProps {
   onPanelClick?: (panel: Panel) => void;
   center?: [number, number];
   zoom?: number;
+  mini?: boolean;
 }
 
 export default function MapView({
@@ -37,6 +38,7 @@ export default function MapView({
   onPanelClick,
   center,
   zoom = 5,
+  mini = false,
 }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -117,7 +119,7 @@ export default function MapView({
     <div
       ref={containerRef}
       className="h-full w-full"
-      style={{ minHeight: "300px" }}
+      style={{ minHeight: mini ? "160px" : "300px" }}
     />
   );
 }

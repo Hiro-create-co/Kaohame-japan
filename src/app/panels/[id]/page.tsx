@@ -197,11 +197,12 @@ export default function PanelDetailPage() {
 
       <div className="flex-1 overflow-y-auto pb-24">
         {/* Mini Map */}
-        <div className="h-48">
+        <div className="h-40 overflow-hidden">
           <MapView
             panels={[panel]}
             center={[panel.latitude, panel.longitude]}
             zoom={15}
+            mini
           />
         </div>
 
