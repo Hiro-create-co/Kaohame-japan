@@ -339,7 +339,7 @@ export default function PanelDetailPage() {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  capture="environment"
+
                   onChange={handleFileSelect}
                   className="block w-full text-sm text-gray-500 file:mr-3 file:rounded-full file:border-0 file:bg-rose-600 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-rose-700"
                 />
