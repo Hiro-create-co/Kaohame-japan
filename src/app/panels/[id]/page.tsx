@@ -214,7 +214,7 @@ export default function PanelDetailPage() {
           <div className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-start gap-3">
               <img
-                src={panel.image_url || "/ogp.jpg"}
+                src={panel.image_url || "/default-panel.jpg"}
                 alt=""
                 className="h-14 w-14 shrink-0 rounded-xl object-cover"
               />

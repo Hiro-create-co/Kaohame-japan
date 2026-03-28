@@ -16,7 +16,7 @@ function createPanelIcon(imageUrl?: string | null) {
     });
   }
   return L.divIcon({
-    html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="/ogp.jpg" style="width:100%;height:100%;object-fit:cover;" /></div>`,
+    html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="/default-panel.jpg" style="width:100%;height:100%;object-fit:cover;" /></div>`,
     className: "",
     iconSize: [40, 40],
     iconAnchor: [20, 20],

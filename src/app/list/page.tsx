@@ -92,7 +92,7 @@ export default function ListPage() {
           </div>
         ) : filteredPanels.length === 0 ? (
           <div className="py-12 text-center">
-            <img src="/ogp.jpg" alt="" className="mx-auto h-16 w-16 rounded-lg" />
+            <img src="/default-panel.jpg" alt="" className="mx-auto h-16 w-16 rounded-lg" />
             <p className="mt-2 text-sm text-gray-500">
               {filter
                 ? "該当するパネルが見つかりません"
@@ -115,7 +115,7 @@ export default function ListPage() {
               >
                 <div className="flex items-start gap-3">
                   <img
-                    src={panel.image_url || "/ogp.jpg"}
+                    src={panel.image_url || "/default-panel.jpg"}
                     alt=""
                     className="h-12 w-12 shrink-0 rounded-lg object-cover"
                   />
