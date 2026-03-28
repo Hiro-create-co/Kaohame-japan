@@ -64,7 +64,7 @@ export default function SettingsPage() {
                     className="h-14 w-14 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600 text-xl font-bold">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-100 text-pink-500 text-xl font-bold">
                     {displayName.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -94,7 +94,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => setShowLoginModal(true)}
-                className="mt-4 w-full rounded-xl bg-rose-600 py-3.5 text-base font-bold text-white transition-colors active:bg-rose-700"
+                className="mt-4 w-full rounded-xl bg-pink-500 py-3.5 text-base font-bold text-white transition-colors active:bg-pink-600"
               >
                 ログイン / 新規登録
               </button>
@@ -109,7 +109,7 @@ export default function SettingsPage() {
           </h2>
           <div className="space-y-4">
             <div className="flex gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-base">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-base">
                 🗾
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-base">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-base">
                 📸
               </div>
               <div>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-base">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-base">
                 ➕
               </div>
               <div>
@@ -148,7 +148,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-base">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-base">
                 🏆
               </div>
               <div>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-base">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-base">
                 ❤️
               </div>
               <div>
@@ -193,7 +193,7 @@ export default function SettingsPage() {
                 placeholder="匿名"
                 value={defaultName}
                 onChange={(e) => handleSaveName(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
               />
               <p className="mt-1 text-sm text-gray-400">
                 パネル登録時に自動で入力されます
@@ -232,7 +232,7 @@ export default function SettingsPage() {
               className="h-12 w-12 rounded-xl"
             />
             <div>
-              <p className="text-base font-bold text-rose-600">
+              <p className="text-base font-bold text-pink-500">
                 カオハメJAPAN
               </p>
               <p className="text-sm text-gray-500">v0.2.0</p>

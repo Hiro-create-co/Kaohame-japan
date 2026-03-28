@@ -92,9 +92,9 @@ export default function LoginModal() {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
             <svg
-              className="h-6 w-6 text-rose-600"
+              className="h-6 w-6 text-pink-500"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -174,7 +174,7 @@ export default function LoginModal() {
                   placeholder="メールアドレス"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
                 />
               </div>
               <div>
@@ -185,7 +185,7 @@ export default function LoginModal() {
                   placeholder="パスワード（6文字以上）"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
                 />
               </div>
 
@@ -198,7 +198,7 @@ export default function LoginModal() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-rose-600 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-rose-700 active:scale-[0.98] disabled:opacity-50"
+                className="w-full rounded-xl bg-pink-500 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-pink-600 active:scale-[0.98] disabled:opacity-50"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -223,7 +223,7 @@ export default function LoginModal() {
                       setIsSignUp(false);
                       setError(null);
                     }}
-                    className="font-medium text-rose-600"
+                    className="font-medium text-pink-500"
                   >
                     ログイン
                   </button>
@@ -236,7 +236,7 @@ export default function LoginModal() {
                       setIsSignUp(true);
                       setError(null);
                     }}
-                    className="font-medium text-rose-600"
+                    className="font-medium text-pink-500"
                   >
                     新規登録
                   </button>

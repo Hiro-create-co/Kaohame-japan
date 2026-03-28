@@ -133,7 +133,7 @@ export default function HomePage() {
     >
       {/* Header - overlay on map */}
       <header className="absolute left-0 right-0 top-0 z-[1000] bg-white/90 backdrop-blur-sm px-4 py-2 shadow-sm">
-        <h1 className="text-center text-base font-bold text-rose-600">
+        <h1 className="text-center text-base font-bold text-pink-500">
           カオハメJAPAN
         </h1>
         <p className="text-center text-[10px] text-gray-500">
@@ -146,7 +146,7 @@ export default function HomePage() {
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
-              <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-rose-200 border-t-rose-600" />
+              <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-pink-200 border-t-pink-500" />
               <p className="text-sm text-gray-500">読み込み中...</p>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-3 rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white"
+                className="mt-3 rounded-full bg-pink-500 px-4 py-2 text-sm font-medium text-white"
               >
                 再読み込み
               </button>
@@ -191,9 +191,9 @@ export default function HomePage() {
         aria-label="現在地に移動"
       >
         {locating ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-rose-200 border-t-rose-600" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-200 border-t-pink-500" />
         ) : (
-          <svg className="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <svg className="h-5 w-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <circle cx="12" cy="12" r="3" />
             <path strokeLinecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3" />
           </svg>
@@ -232,7 +232,7 @@ export default function HomePage() {
                   href={`/panels/${panel.id}`}
                   className={`flex-shrink-0 rounded-2xl bg-white shadow-lg transition-all duration-200 ${
                     isSelected
-                      ? "ring-2 ring-rose-500 shadow-xl scale-[1.02]"
+                      ? "ring-2 ring-pink-400 shadow-xl scale-[1.02]"
                       : "shadow-md"
                   }`}
                   style={{
@@ -254,7 +254,7 @@ export default function HomePage() {
                       <h3 className="truncate text-sm font-bold text-gray-900">
                         {panel.name}
                       </h3>
-                      <p className="text-xs font-medium text-rose-600">
+                      <p className="text-xs font-medium text-pink-500">
                         {panel.prefecture}
                       </p>
                       <p className="mt-0.5 truncate text-[11px] text-gray-500">
