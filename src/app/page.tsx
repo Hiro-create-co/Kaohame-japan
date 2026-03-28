@@ -38,7 +38,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
-  const { latitude, longitude, loading: geoLoading, requestLocation } = useGeolocation();
+  const { latitude, longitude, error: geoError, loading: geoLoading, requestLocation } = useGeolocation();
   const cardScrollRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const [locating, setLocating] = useState(false);
@@ -104,6 +104,14 @@ export default function HomePage() {
     }
   }, [locating, latitude, longitude]);
 
+  // Show alert when geolocation fails while locating
+  useEffect(() => {
+    if (locating && geoError) {
+      setLocating(false);
+      alert("📍 位置情報をオンにしてください\n\nスマホの「設定」→「プライバシー」→「位置情報サービス」をオンにして、ブラウザの位置情報も許可してください。");
+    }
+  }, [locating, geoError]);
+
   // Handle card scroll to update selected marker
   const handleCardScroll = useCallback(() => {
     if (!cardScrollRef.current) return;
@@ -164,12 +172,8 @@ export default function HomePage() {
             userLng={longitude}
             onPanelSelect={handlePanelSelect}
             selectedPanelId={selectedPanel?.id}
-            center={
-              latitude && longitude
-                ? [latitude, longitude]
-                : [36.5, 137.0]
-            }
-            zoom={latitude ? 10 : 5}
+            center={[36.5, 137.0]}
+            zoom={5}
             onMapReady={(map) => { mapInstanceRef.current = map; }}
           />
         )}

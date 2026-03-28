@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 interface GeolocationState {
   latitude: number | null;
   longitude: number | null;
   error: string | null;
   loading: boolean;
+  denied: boolean;
 }
 
 export function useGeolocation() {
@@ -14,7 +15,8 @@ export function useGeolocation() {
     latitude: null,
     longitude: null,
     error: null,
-    loading: true,
+    loading: false,
+    denied: false,
   });
 
   const requestLocation = useCallback(() => {
@@ -27,7 +29,7 @@ export function useGeolocation() {
       return;
     }
 
-    setState((prev) => ({ ...prev, loading: true }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -36,22 +38,27 @@ export function useGeolocation() {
           longitude: position.coords.longitude,
           error: null,
           loading: false,
+          denied: false,
         });
       },
       (error) => {
+        const denied = error.code === error.PERMISSION_DENIED;
         let message = "位置情報の取得に失敗しました";
-        if (error.code === error.PERMISSION_DENIED) {
+        if (denied) {
           message = "位置情報の許可が必要です";
+        } else if (error.code === error.TIMEOUT) {
+          message = "位置情報の取得がタイムアウトしました";
         }
-        setState((prev) => ({ ...prev, error: message, loading: false }));
+        setState((prev) => ({
+          ...prev,
+          error: message,
+          loading: false,
+          denied,
+        }));
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   }, []);
-
-  useEffect(() => {
-    requestLocation();
-  }, [requestLocation]);
 
   return { ...state, requestLocation };
 }
