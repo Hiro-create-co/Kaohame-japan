@@ -52,7 +52,7 @@ export default function ProgressPage() {
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-200 border-t-yellow-500" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function ProgressPage() {
       </header>
 
       {/* Progress Overview */}
-      <div className="bg-gradient-to-br from-amber-400 to-amber-500 p-6 text-white">
+      <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-6 text-white">
         <div className="text-center">
           <p className="text-5xl font-bold">{totalVisited}/47</p>
           <p className="mt-1 text-sm opacity-90">都道府県を制覇</p>
@@ -130,7 +130,7 @@ export default function ProgressPage() {
                     >
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-                          isVisited ? "bg-amber-500" : "bg-gray-100"
+                          isVisited ? "bg-yellow-500" : "bg-gray-100"
                         }`}
                       >
                         {prefecturePaths[pref.name] ? (
@@ -158,7 +158,7 @@ export default function ProgressPage() {
                         </span>
                       </div>
                       {count > 0 && (
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-500">
+                        <span className="rounded-full bg-yellow-50 px-2 py-0.5 text-xs text-yellow-500">
                           {count}件
                         </span>
                       )}

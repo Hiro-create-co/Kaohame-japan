@@ -58,7 +58,7 @@ export default function ListPage() {
             placeholder="パネル名・都道府県で検索..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
           />
         </div>
 
@@ -74,7 +74,7 @@ export default function ListPage() {
               onClick={() => setSortBy(s.key)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 sortBy === s.key
-                  ? "bg-amber-500 text-white"
+                  ? "bg-yellow-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -88,7 +88,7 @@ export default function ListPage() {
       <div className="flex-1 overflow-y-auto p-4 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-200 border-t-yellow-500" />
           </div>
         ) : filteredPanels.length === 0 ? (
           <div className="py-12 text-center">
@@ -100,7 +100,7 @@ export default function ListPage() {
             </p>
             <Link
               href="/add"
-              className="mt-3 inline-block rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-white"
+              className="mt-3 inline-block rounded-full bg-yellow-500 px-4 py-2 text-sm font-medium text-white"
             >
               最初のパネルを登録する
             </Link>
@@ -123,7 +123,7 @@ export default function ListPage() {
                     <h3 className="font-bold text-gray-900 truncate">
                       {panel.name}
                     </h3>
-                    <p className="text-xs text-amber-500 font-medium">
+                    <p className="text-xs text-yellow-500 font-medium">
                       {panel.prefecture}
                     </p>
                     <p className="mt-1 text-xs text-gray-500 line-clamp-2">
@@ -132,7 +132,7 @@ export default function ListPage() {
                     {(panel.like_count ?? 0) > 0 && (
                       <div className="mt-1 flex items-center gap-1">
                         <svg
-                          className="h-3.5 w-3.5 text-amber-400"
+                          className="h-3.5 w-3.5 text-yellow-400"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                           strokeWidth={0}

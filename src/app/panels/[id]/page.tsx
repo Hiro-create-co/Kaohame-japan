@@ -135,7 +135,7 @@ export default function PanelDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-200 border-t-yellow-500" />
       </div>
     );
   }
@@ -149,7 +149,7 @@ export default function PanelDetailPage() {
         </p>
         <button
           onClick={() => router.back()}
-          className="mt-4 rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-white"
+          className="mt-4 rounded-full bg-yellow-500 px-4 py-2 text-sm font-medium text-white"
         >
           戻る
         </button>
@@ -227,7 +227,7 @@ export default function PanelDetailPage() {
                 <h2 className="text-xl font-bold text-gray-900">
                   {panel.name}
                 </h2>
-                <p className="text-sm font-medium text-amber-500">
+                <p className="text-sm font-medium text-yellow-500">
                   {panel.prefecture}
                 </p>
               </div>
@@ -239,7 +239,7 @@ export default function PanelDetailPage() {
               >
                 <svg
                   className={`h-7 w-7 transition-colors ${
-                    liked ? "text-amber-500" : "text-gray-300"
+                    liked ? "text-yellow-500" : "text-gray-300"
                   }`}
                   fill={liked ? "currentColor" : "none"}
                   viewBox="0 0 24 24"
@@ -304,7 +304,7 @@ export default function PanelDetailPage() {
             </a>
             <button
               onClick={handleShare}
-              className="flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-medium text-amber-500 shadow-sm transition-colors hover:bg-amber-50"
+              className="flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-medium text-yellow-500 shadow-sm transition-colors hover:bg-yellow-50"
             >
               <svg
                 className="h-4 w-4"
@@ -335,7 +335,7 @@ export default function PanelDetailPage() {
                   setShowUpload(true);
                   if (displayName) setUserName(displayName);
                 }}
-                className="rounded-full bg-amber-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-amber-600"
+                className="rounded-full bg-yellow-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-yellow-600"
               >
                 写真を投稿
               </button>
@@ -343,7 +343,7 @@ export default function PanelDetailPage() {
 
             {/* Upload Form */}
             {showUpload && (
-              <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-3">
+              <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3 space-y-3">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -376,7 +376,7 @@ export default function PanelDetailPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full h-28 rounded-lg border-2 border-dashed border-amber-300 flex flex-col items-center justify-center gap-1.5 text-amber-300 hover:border-amber-400 hover:text-amber-400 transition-colors bg-white/50"
+                    className="w-full h-28 rounded-lg border-2 border-dashed border-yellow-300 flex flex-col items-center justify-center gap-1.5 text-yellow-300 hover:border-yellow-400 hover:text-yellow-400 transition-colors bg-white/50"
                   >
                     <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -391,14 +391,14 @@ export default function PanelDetailPage() {
                   placeholder="ニックネーム（任意）"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400 bg-white"
                 />
 
                 <div className="flex gap-2">
                   <button
                     onClick={handleUploadSubmit}
                     disabled={!selectedFile || uploading}
-                    className="flex-1 rounded-full bg-amber-500 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 rounded-full bg-yellow-500 py-2 text-sm font-medium text-white transition-colors hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {uploading ? "アップロード中..." : "投稿する"}
                   </button>
@@ -453,7 +453,7 @@ export default function PanelDetailPage() {
                         <svg
                           className={`h-3.5 w-3.5 ${
                             isPhotoLiked(photo.id)
-                              ? "text-amber-400"
+                              ? "text-yellow-400"
                               : "text-gray-300"
                           }`}
                           fill={isPhotoLiked(photo.id) ? "currentColor" : "none"}
