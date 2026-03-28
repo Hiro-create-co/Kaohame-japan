@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { getPanels } from "@/lib/panels";
 import { PREFECTURES, REGIONS } from "@/data/prefectures";
 import { prefecturePaths } from "@/data/prefecturePaths";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import type { Panel } from "@/types";
 
 const VISITED_PANELS_KEY = "kaohame_visited_panels";
@@ -27,6 +28,7 @@ export default function ProgressPage() {
   const [loading, setLoading] = useState(true);
   const [visitedPanelIds, setVisitedPanelIds] = useState<Set<string>>(new Set());
   const [expandedPrefecture, setExpandedPrefecture] = useState<string | null>(null);
+  const { requireAuth } = useRequireAuth();
 
   useEffect(() => {
     setVisitedPanelIds(getVisitedPanelIds());
@@ -37,6 +39,7 @@ export default function ProgressPage() {
   }, []);
 
   const togglePanelVisited = useCallback((panelId: string) => {
+    if (!requireAuth()) return;
     setVisitedPanelIds((prev) => {
       const next = new Set(prev);
       if (next.has(panelId)) {
@@ -47,7 +50,7 @@ export default function ProgressPage() {
       saveVisitedPanelIds(next);
       return next;
     });
-  }, []);
+  }, [requireAuth]);
 
   // Group panels by prefecture
   const panelsByPrefecture = panels.reduce(
