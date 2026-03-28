@@ -115,7 +115,7 @@ export default function ListPage() {
               >
                 <div className="flex items-start gap-3">
                   <img
-                    src="/ogp.jpg"
+                    src={panel.image_url || "/ogp.jpg"}
                     alt=""
                     className="h-12 w-12 shrink-0 rounded-lg object-cover"
                   />

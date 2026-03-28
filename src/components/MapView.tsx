@@ -5,14 +5,24 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Panel } from "@/types";
 
-// Custom marker icon for panels
-const panelIcon = L.divIcon({
-  html: `<div style="background:#E11D48;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">顔</div>`,
-  className: "",
-  iconSize: [36, 36],
-  iconAnchor: [18, 18],
-  popupAnchor: [0, -18],
-});
+function createPanelIcon(imageUrl?: string | null) {
+  if (imageUrl) {
+    return L.divIcon({
+      html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" /></div>`,
+      className: "",
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      popupAnchor: [0, -20],
+    });
+  }
+  return L.divIcon({
+    html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="/ogp.jpg" style="width:100%;height:100%;object-fit:cover;" /></div>`,
+    className: "",
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -20],
+  });
+}
 
 const userIcon = L.divIcon({
   html: `<div style="background:#3B82F6;border-radius:50%;width:16px;height:16px;border:3px solid white;box-shadow:0 0 0 2px rgba(59,130,246,0.3),0 2px 6px rgba(0,0,0,0.3);"></div>`,
@@ -88,7 +98,7 @@ export default function MapView({
           </div>`;
 
       const marker = L.marker([panel.latitude, panel.longitude], {
-        icon: panelIcon,
+        icon: createPanelIcon(panel.image_url),
       })
         .addTo(map)
         .bindPopup(popupContent);

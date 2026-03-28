@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { addPanel } from "@/lib/panels";
+import { supabase } from "@/lib/supabase";
 import { PREFECTURES } from "@/data/prefectures";
 
 export default function AddPanelPage() {
@@ -12,6 +13,9 @@ export default function AddPanelPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [useCurrentLocation, setUseCurrentLocation] = useState(true);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -27,6 +31,15 @@ export default function AddPanelPage() {
       setForm((prev) => ({ ...prev, contributor_name: savedName }));
     }
   }, []);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +58,32 @@ export default function AddPanelPage() {
       return;
     }
 
+    // Upload image if provided
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 8);
+      const filePath = `panel-images/${timestamp}-${random}.jpg`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("panel-photos")
+        .upload(filePath, imageFile, { contentType: imageFile.type });
+
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage
+          .from("panel-photos")
+          .getPublicUrl(filePath);
+        imageUrl = publicUrl;
+      }
+    }
+
     const result = await addPanel({
       name: form.name,
       description: form.description,
       prefecture: form.prefecture,
       latitude: lat,
       longitude: lng,
-      image_url: null,
+      image_url: imageUrl,
       contributor_name: form.contributor_name || "匿名",
     });
 
@@ -97,6 +129,56 @@ export default function AddPanelPage() {
         onSubmit={handleSubmit}
         className="flex-1 overflow-y-auto p-4 pb-28 space-y-4"
       >
+        {/* Panel Image */}
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            パネルの写真
+          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          {imagePreview ? (
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="プレビュー"
+                className="w-full h-48 object-cover rounded-lg border border-gray-200"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full h-32 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-rose-400 hover:text-rose-400 transition-colors"
+            >
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+              </svg>
+              <span className="text-xs">タップして写真を撮影・選択</span>
+            </button>
+          )}
+          <p className="mt-1 text-xs text-gray-400">
+            写真を登録するとマップのアイコンに表示されます
+          </p>
+        </div>
+
         {/* Panel Name */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
