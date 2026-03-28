@@ -379,7 +379,7 @@ export default function PanelDetailPage() {
 
                 <input
                   type="text"
-                  placeholder="お名前（任意）"
+                  placeholder="ニックネーム（任意）"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"

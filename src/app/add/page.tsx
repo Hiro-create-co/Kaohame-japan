@@ -321,11 +321,11 @@ export default function AddPanelPage() {
         {/* Contributor Name */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            あなたの名前（任意）
+            ニックネーム（任意）
           </label>
           <input
             type="text"
-            placeholder="匿名でもOK"
+            placeholder="ニックネーム（匿名でもOK）"
             value={form.contributor_name}
             onChange={(e) => updateField("contributor_name", e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
