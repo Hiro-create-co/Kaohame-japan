@@ -92,7 +92,7 @@ export default function ListPage() {
           </div>
         ) : filteredPanels.length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-4xl">🎭</p>
+            <img src="/ogp.jpg" alt="" className="mx-auto h-16 w-16 rounded-lg" />
             <p className="mt-2 text-sm text-gray-500">
               {filter
                 ? "該当するパネルが見つかりません"
@@ -114,9 +114,11 @@ export default function ListPage() {
                 className="block rounded-xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-2xl">
-                    🎭
-                  </div>
+                  <img
+                    src="/ogp.jpg"
+                    alt=""
+                    className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                  />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-gray-900 truncate">
                       {panel.name}

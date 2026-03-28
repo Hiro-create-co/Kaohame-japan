@@ -210,9 +210,11 @@ export default function PanelDetailPage() {
         <div className="p-4 space-y-4">
           <div className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-3xl">
-                🎭
-              </div>
+              <img
+                src="/ogp.jpg"
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-xl object-cover"
+              />
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-gray-900">
                   {panel.name}
