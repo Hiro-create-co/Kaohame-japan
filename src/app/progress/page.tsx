@@ -253,7 +253,7 @@ export default function ProgressPage() {
                       {/* Expanded panel list */}
                       {isExpanded && hasPanel && (
                         <div className="bg-gray-50 px-4 py-2 space-y-1">
-                          {prefPanels.map((panel) => {
+                          {prefPanels.map((panel, index) => {
                             const isVisited = visitedPanelIds.has(panel.id);
                             return (
                               <button
@@ -272,14 +272,21 @@ export default function ProgressPage() {
                                       : "border-gray-300 bg-white"
                                   }`}
                                 >
-                                  {isVisited && (
+                                  {isVisited ? (
                                     <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
+                                  ) : (
+                                    <span className="text-[10px] font-bold text-gray-400">
+                                      {index + 1}
+                                    </span>
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className={`text-sm truncate ${isVisited ? "text-yellow-700 font-medium" : "text-gray-700"}`}>
+                                    <span className={`mr-1.5 text-xs ${isVisited ? "text-yellow-400" : "text-gray-400"}`}>
+                                      #{index + 1}
+                                    </span>
                                     {panel.name}
                                   </p>
                                 </div>
