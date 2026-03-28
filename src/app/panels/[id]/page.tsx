@@ -339,19 +339,42 @@ export default function PanelDetailPage() {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-
                   onChange={handleFileSelect}
-                  className="block w-full text-sm text-gray-500 file:mr-3 file:rounded-full file:border-0 file:bg-rose-600 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-rose-700"
+                  className="hidden"
                 />
 
-                {previewUrl && (
+                {previewUrl ? (
                   <div className="relative">
                     <img
                       src={previewUrl}
                       alt="プレビュー"
                       className="w-full max-h-48 rounded-lg object-cover"
                     />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        if (previewUrl) URL.revokeObjectURL(previewUrl);
+                        setPreviewUrl(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                      className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
+                    >
+                      ✕
+                    </button>
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-28 rounded-lg border-2 border-dashed border-rose-300 flex flex-col items-center justify-center gap-1.5 text-rose-400 hover:border-rose-500 hover:text-rose-500 transition-colors bg-white/50"
+                  >
+                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                    </svg>
+                    <span className="text-xs font-medium">タップして写真を選択</span>
+                  </button>
                 )}
 
                 <input
@@ -359,7 +382,7 @@ export default function PanelDetailPage() {
                   placeholder="お名前（任意）"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
                 />
 
                 <div className="flex gap-2">
