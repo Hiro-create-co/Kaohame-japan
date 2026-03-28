@@ -28,3 +28,8 @@ body {
 .leaflet-popup-content {
   margin: 10px 14px !important;
 }
+
+/* Hide scrollbar for card carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

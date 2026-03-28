@@ -1,26 +1,23 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Panel } from "@/types";
 
-function createPanelIcon(imageUrl?: string | null) {
-  if (imageUrl) {
-    return L.divIcon({
-      html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" /></div>`,
-      className: "",
-      iconSize: [40, 40],
-      iconAnchor: [20, 20],
-      popupAnchor: [0, -20],
-    });
-  }
+function createPanelIcon(imageUrl?: string | null, selected?: boolean) {
+  const size = selected ? 52 : 40;
+  const border = selected ? "4px solid #E11D48" : "3px solid #E11D48";
+  const shadow = selected
+    ? "0 0 0 4px rgba(225,29,72,0.3),0 4px 12px rgba(0,0,0,0.4)"
+    : "0 2px 8px rgba(0,0,0,0.3)";
+  const src = imageUrl || "/default-panel.jpg";
   return L.divIcon({
-    html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid #E11D48;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;"><img src="/default-panel.jpg" style="width:100%;height:100%;object-fit:cover;" /></div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;border:${border};box-shadow:${shadow};overflow:hidden;background:white;transition:all 0.2s;"><img src="${src}" style="width:100%;height:100%;object-fit:cover;" /></div>`,
     className: "",
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
-    popupAnchor: [0, -20],
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
   });
 }
 
@@ -35,7 +32,8 @@ interface MapViewProps {
   panels: Panel[];
   userLat?: number | null;
   userLng?: number | null;
-  onPanelClick?: (panel: Panel) => void;
+  onPanelSelect?: (panel: Panel | null) => void;
+  selectedPanelId?: string | null;
   center?: [number, number];
   zoom?: number;
   mini?: boolean;
@@ -45,13 +43,15 @@ export default function MapView({
   panels,
   userLat,
   userLng,
-  onPanelClick,
+  onPanelSelect,
+  selectedPanelId,
   center,
   zoom = 5,
   mini = false,
 }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const markersRef = useRef<Map<string, L.Marker>>(new Map());
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -68,6 +68,11 @@ export default function MapView({
       maxZoom: 19,
     }).addTo(map);
 
+    // Tap on empty map area deselects
+    map.on("click", () => {
+      if (onPanelSelect) onPanelSelect(null);
+    });
+
     mapRef.current = map;
 
     return () => {
@@ -82,34 +87,31 @@ export default function MapView({
     const map = mapRef.current;
     if (!map) return;
 
-    const markers: L.Marker[] = [];
+    const newMarkers = new Map<string, L.Marker>();
 
     panels.forEach((panel) => {
-      const popupContent = onPanelClick
-        ? `<div style="text-align:center;min-width:140px;padding:2px 0;">
-            <strong style="font-size:14px;display:block;margin-bottom:4px;">${panel.name}</strong>
-            <span style="color:#E11D48;font-size:12px;font-weight:500;">${panel.prefecture}</span>
-            ${panel.description ? `<p style="color:#666;font-size:11px;margin-top:4px;line-height:1.4;">${panel.description.slice(0, 40)}${panel.description.length > 40 ? "..." : ""}</p>` : ""}
-            <div style="margin-top:8px;"><a href="/panels/${panel.id}" style="display:inline-block;background:#E11D48;color:white;padding:4px 14px;border-radius:20px;font-size:12px;text-decoration:none;font-weight:bold;">詳細を見る</a></div>
-          </div>`
-        : `<div style="text-align:center;min-width:120px;">
-            <strong style="font-size:14px;">${panel.name}</strong>
-            <br/><span style="color:#666;font-size:12px;">${panel.prefecture}</span>
-          </div>`;
-
+      const isSelected = panel.id === selectedPanelId;
       const marker = L.marker([panel.latitude, panel.longitude], {
-        icon: createPanelIcon(panel.image_url),
-      })
-        .addTo(map)
-        .bindPopup(popupContent);
+        icon: createPanelIcon(panel.image_url, isSelected),
+        zIndexOffset: isSelected ? 1000 : 0,
+      }).addTo(map);
 
-      markers.push(marker);
+      marker.on("click", (e) => {
+        L.DomEvent.stopPropagation(e);
+        if (onPanelSelect) onPanelSelect(panel);
+      });
+
+      newMarkers.set(panel.id, marker);
     });
 
+    // Cleanup old markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = newMarkers;
+
     return () => {
-      markers.forEach((m) => m.remove());
+      newMarkers.forEach((m) => m.remove());
     };
-  }, [panels, onPanelClick]);
+  }, [panels, selectedPanelId, onPanelSelect]);
 
   // User location marker
   useEffect(() => {
@@ -118,12 +120,24 @@ export default function MapView({
 
     const marker = L.marker([userLat, userLng], { icon: userIcon })
       .addTo(map)
-      .bindPopup('<div style="text-align:center;font-size:12px;font-weight:500;">📍 現在地</div>');
+      .bindPopup(
+        '<div style="text-align:center;font-size:12px;font-weight:500;">📍 現在地</div>'
+      );
 
     return () => {
       marker.remove();
     };
   }, [userLat, userLng]);
+
+  // Pan to selected panel
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !selectedPanelId) return;
+    const panel = panels.find((p) => p.id === selectedPanelId);
+    if (panel) {
+      map.panTo([panel.latitude, panel.longitude], { animate: true });
+    }
+  }, [selectedPanelId, panels]);
 
   return (
     <div
