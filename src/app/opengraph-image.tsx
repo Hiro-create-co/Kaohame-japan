@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export const size = {
   width: 1200,
@@ -7,7 +9,10 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default function OGImage() {
+export default async function OGImage() {
+  const imgData = await readFile(join(process.cwd(), "public/ogp.png"));
+  const imgBase64 = `data:image/png;base64,${imgData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -22,14 +27,12 @@ export default function OGImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div
-          style={{
-            fontSize: 120,
-            marginBottom: 20,
-          }}
-        >
-          🎭
-        </div>
+        <img
+          src={imgBase64}
+          width={280}
+          height={280}
+          style={{ marginBottom: 20, borderRadius: 24 }}
+        />
         <div
           style={{
             fontSize: 72,
