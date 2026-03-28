@@ -15,12 +15,16 @@ import {
   unlikePhoto,
 } from "@/lib/panels";
 import type { Panel, PanelPhoto } from "@/types";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
 export default function PanelDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { requireAuth } = useRequireAuth();
+  const { displayName } = useAuth();
   const [panel, setPanel] = useState<Panel | null>(null);
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState<PanelPhoto[]>([]);
@@ -77,6 +81,7 @@ export default function PanelDetailPage() {
 
   const handleLikeToggle = async () => {
     if (!panel) return;
+    if (!requireAuth()) return;
     if (liked) {
       const newCount = await unlikePanel(panel.id);
       if (newCount !== null) {
@@ -325,7 +330,11 @@ export default function PanelDetailPage() {
                 みんなの写真 ({photos.length})
               </h3>
               <button
-                onClick={() => setShowUpload(true)}
+                onClick={() => {
+                  if (!requireAuth()) return;
+                  setShowUpload(true);
+                  if (displayName) setUserName(displayName);
+                }}
                 className="rounded-full bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-rose-700"
               >
                 写真を投稿
@@ -424,6 +433,7 @@ export default function PanelDetailPage() {
                       </span>
                       <button
                         onClick={async () => {
+                          if (!requireAuth()) return;
                           const photoLiked = isPhotoLiked(photo.id);
                           const newCount = photoLiked
                             ? await unlikePhoto(photo.id)

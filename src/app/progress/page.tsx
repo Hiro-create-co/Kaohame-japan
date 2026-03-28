@@ -5,8 +5,10 @@ import { getPanels } from "@/lib/panels";
 import { PREFECTURES, REGIONS } from "@/data/prefectures";
 import { prefecturePaths } from "@/data/prefecturePaths";
 import type { Panel } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProgressPage() {
+  const { user, displayName, avatarUrl, signOut, setShowLoginModal } = useAuth();
   const [panels, setPanels] = useState<Panel[]>([]);
   const [loading, setLoading] = useState(true);
   const [visitedPrefectures, setVisitedPrefectures] = useState<Set<string>>(
@@ -119,6 +121,56 @@ export default function ProgressPage() {
       {showSettings && (
         <div className="bg-white border-b border-gray-200 p-4 space-y-4">
           <h2 className="text-sm font-bold text-gray-900">設定</h2>
+
+          {/* Account Section */}
+          <div className="rounded-lg bg-gray-50 p-3">
+            {user ? (
+              <div className="flex items-center gap-3">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600 font-bold text-sm">
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {displayName}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {user.email}
+                  </p>
+                </div>
+                <button
+                  onClick={signOut}
+                  className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                >
+                  ログアウト
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">
+                    ログインしていません
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    ログインするといいね・写真投稿ができます
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="shrink-0 rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-rose-700"
+                >
+                  ログイン
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Default Name */}
           <div>

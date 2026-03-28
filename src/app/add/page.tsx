@@ -6,10 +6,14 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { addPanel } from "@/lib/panels";
 import { supabase } from "@/lib/supabase";
 import { PREFECTURES } from "@/data/prefectures";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AddPanelPage() {
   const router = useRouter();
   const { latitude, longitude, loading: geoLoading, error: geoError } = useGeolocation();
+  const { requireAuth } = useRequireAuth();
+  const { user, displayName } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [useCurrentLocation, setUseCurrentLocation] = useState(true);
@@ -26,11 +30,16 @@ export default function AddPanelPage() {
   });
 
   useEffect(() => {
-    const savedName = localStorage.getItem("kaohame_default_name");
-    if (savedName) {
-      setForm((prev) => ({ ...prev, contributor_name: savedName }));
+    // Use auth display name if available, otherwise fall back to localStorage
+    if (displayName) {
+      setForm((prev) => ({ ...prev, contributor_name: displayName }));
+    } else {
+      const savedName = localStorage.getItem("kaohame_default_name");
+      if (savedName) {
+        setForm((prev) => ({ ...prev, contributor_name: savedName }));
+      }
     }
-  }, []);
+  }, [displayName]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,6 +52,7 @@ export default function AddPanelPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!requireAuth()) return;
     setSubmitting(true);
 
     const lat = useCurrentLocation

@@ -3,6 +3,7 @@ import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
+import AuthWrapper from "@/components/AuthWrapper";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -62,9 +63,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="min-h-full flex flex-col font-sans bg-gray-50 text-gray-900">
-        <div className="flex flex-1 flex-col pb-16">{children}</div>
-        <BottomNav />
-        <ServiceWorkerRegistrar />
+        <AuthWrapper>
+          <div className="flex flex-1 flex-col pb-16">{children}</div>
+          <BottomNav />
+          <ServiceWorkerRegistrar />
+        </AuthWrapper>
       </body>
     </html>
   );
