@@ -5,29 +5,18 @@ import { getPanels } from "@/lib/panels";
 import { PREFECTURES, REGIONS } from "@/data/prefectures";
 import { prefecturePaths } from "@/data/prefecturePaths";
 import type { Panel } from "@/types";
-import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProgressPage() {
-  const { user, displayName, avatarUrl, signOut, setShowLoginModal } = useAuth();
   const [panels, setPanels] = useState<Panel[]>([]);
   const [loading, setLoading] = useState(true);
   const [visitedPrefectures, setVisitedPrefectures] = useState<Set<string>>(
     new Set()
   );
-  const [showSettings, setShowSettings] = useState(false);
-  const [defaultName, setDefaultName] = useState("");
 
   useEffect(() => {
-    // Load visited from localStorage
     const saved = localStorage.getItem("kaohame_visited");
     if (saved) {
       setVisitedPrefectures(new Set(JSON.parse(saved)));
-    }
-
-    // Load default name
-    const savedName = localStorage.getItem("kaohame_default_name");
-    if (savedName) {
-      setDefaultName(savedName);
     }
 
     getPanels().then((data) => {
@@ -47,18 +36,6 @@ export default function ProgressPage() {
       localStorage.setItem("kaohame_visited", JSON.stringify([...next]));
       return next;
     });
-  };
-
-  const handleSaveName = (name: string) => {
-    setDefaultName(name);
-    localStorage.setItem("kaohame_default_name", name);
-  };
-
-  const handleResetProgress = () => {
-    if (window.confirm("制覇記録をすべてリセットしますか？この操作は取り消せません。")) {
-      setVisitedPrefectures(new Set());
-      localStorage.removeItem("kaohame_visited");
-    }
   };
 
   const panelCountByPrefecture = panels.reduce(
@@ -82,138 +59,12 @@ export default function ProgressPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-gray-50">
-      <header className="flex items-center justify-between bg-white px-4 py-3 shadow-sm">
-        <div>
-          <h1 className="text-lg font-bold text-gray-900">制覇マップ</h1>
-          <p className="text-xs text-gray-500">
-            顔ハメパネルで写真を撮った都道府県をチェック！
-          </p>
-        </div>
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
-            showSettings ? "bg-rose-100 text-rose-600" : "hover:bg-gray-100 text-gray-500"
-          }`}
-          title="設定"
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-        </button>
+      <header className="bg-white px-4 py-4 shadow-sm">
+        <h1 className="text-xl font-bold text-gray-900">制覇マップ</h1>
+        <p className="text-sm text-gray-500">
+          顔ハメパネルで写真を撮った都道府県をチェック！
+        </p>
       </header>
-
-      {/* Settings Panel */}
-      {showSettings && (
-        <div className="bg-white border-b border-gray-200 p-4 space-y-4">
-          <h2 className="text-sm font-bold text-gray-900">設定</h2>
-
-          {/* Account Section */}
-          <div className="rounded-lg bg-gray-50 p-3">
-            {user ? (
-              <div className="flex items-center gap-3">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600 font-bold text-sm">
-                    {displayName.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {displayName}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {user.email}
-                  </p>
-                </div>
-                <button
-                  onClick={signOut}
-                  className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100"
-                >
-                  ログアウト
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    ログインしていません
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    ログインするといいね・写真投稿ができます
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowLoginModal(true)}
-                  className="shrink-0 rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-rose-700"
-                >
-                  ログイン
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Default Name */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">
-              デフォルトの名前（パネル登録時）
-            </label>
-            <input
-              type="text"
-              placeholder="匿名"
-              value={defaultName}
-              onChange={(e) => handleSaveName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
-            />
-            <p className="mt-1 text-xs text-gray-400">
-              パネル登録時に自動で入力されます
-            </p>
-          </div>
-
-          {/* Reset Progress */}
-          <div>
-            <button
-              onClick={handleResetProgress}
-              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100"
-            >
-              制覇記録をリセット
-            </button>
-            <p className="mt-1 text-xs text-gray-400">
-              すべての都道府県のチェックが外れます
-            </p>
-          </div>
-
-          {/* App Info */}
-          <div className="rounded-lg bg-gray-50 p-3">
-            <p className="text-xs text-gray-500">
-              <span className="font-bold text-rose-600">カオハメJAPAN</span>{" "}
-              v0.1.0
-            </p>
-            <p className="mt-1 text-xs text-gray-400">
-              47都道府県の顔ハメパネルを制覇しよう！
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Progress Overview */}
       <div className="bg-gradient-to-br from-rose-500 to-rose-600 p-6 text-white">
@@ -221,7 +72,6 @@ export default function ProgressPage() {
           <p className="text-5xl font-bold">{totalVisited}/47</p>
           <p className="mt-1 text-sm opacity-90">都道府県を制覇</p>
 
-          {/* Progress Bar */}
           <div className="mx-auto mt-4 h-3 max-w-xs overflow-hidden rounded-full bg-white/30">
             <div
               className="h-full rounded-full bg-white transition-all duration-500"
@@ -231,7 +81,6 @@ export default function ProgressPage() {
           <p className="mt-1 text-xs opacity-80">{progressPercent}% 達成</p>
         </div>
 
-        {/* Achievement badges */}
         {totalVisited >= 47 && (
           <div className="mt-3 text-center">
             <span className="inline-block rounded-full bg-yellow-400 px-4 py-1 text-sm font-bold text-yellow-900">
@@ -281,9 +130,7 @@ export default function ProgressPage() {
                     >
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-                          isVisited
-                            ? "bg-rose-600"
-                            : "bg-gray-100"
+                          isVisited ? "bg-rose-600" : "bg-gray-100"
                         }`}
                       >
                         {prefecturePaths[pref.name] ? (
@@ -294,7 +141,9 @@ export default function ProgressPage() {
                             />
                           </svg>
                         ) : (
-                          <span className={`text-xs ${isVisited ? "text-white" : "text-gray-400"}`}>
+                          <span
+                            className={`text-xs ${isVisited ? "text-white" : "text-gray-400"}`}
+                          >
                             {isVisited ? "✓" : ""}
                           </span>
                         )}
