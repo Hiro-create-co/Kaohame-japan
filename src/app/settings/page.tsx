@@ -24,7 +24,7 @@ export default function SettingsPage() {
         "制覇記録をすべてリセットしますか？\nこの操作は取り消せません。"
       )
     ) {
-      localStorage.removeItem("kaohame_visited");
+      localStorage.removeItem("kaohame_visited_panels");
       alert("リセットしました");
     }
   };
