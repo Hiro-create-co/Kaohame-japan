@@ -9,9 +9,9 @@ import type { Panel } from "@/types";
 
 function createPanelIcon(imageUrl?: string | null, selected?: boolean) {
   const size = selected ? 52 : 40;
-  const border = selected ? "4px solid #EC4899" : "3px solid #EC4899";
+  const border = selected ? "4px solid #F59E0B" : "3px solid #F59E0B";
   const shadow = selected
-    ? "0 0 0 4px rgba(236,72,153,0.3),0 4px 12px rgba(0,0,0,0.4)"
+    ? "0 0 0 4px rgba(245,158,11,0.3),0 4px 12px rgba(0,0,0,0.4)"
     : "0 2px 8px rgba(0,0,0,0.3)";
   const src = imageUrl || "/default-panel.jpg";
   return L.divIcon({
@@ -109,7 +109,7 @@ export default function MapView({
         if (count >= 50) { size = 56; fontSize = 16; }
         else if (count >= 20) { size = 48; fontSize = 15; }
         return L.divIcon({
-          html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#DB2777);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:${fontSize}px;box-shadow:0 2px 8px rgba(236,72,153,0.4);border:3px solid white;">${count}</div>`,
+          html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#D97706);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:${fontSize}px;box-shadow:0 2px 8px rgba(245,158,11,0.4);border:3px solid white;">${count}</div>`,
           className: "",
           iconSize: [size, size],
           iconAnchor: [size / 2, size / 2],

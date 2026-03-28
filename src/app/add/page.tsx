@@ -174,7 +174,7 @@ export default function AddPanelPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-32 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-pink-300 hover:text-pink-300 transition-colors"
+              className="w-full h-32 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-amber-300 hover:text-amber-300 transition-colors"
             >
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -191,7 +191,7 @@ export default function AddPanelPage() {
         {/* Panel Name */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            パネル名 <span className="text-pink-400">*</span>
+            パネル名 <span className="text-amber-400">*</span>
           </label>
           <input
             type="text"
@@ -199,20 +199,20 @@ export default function AddPanelPage() {
             placeholder="例: 熊本城くまモンパネル"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </div>
 
         {/* Prefecture */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            都道府県 <span className="text-pink-400">*</span>
+            都道府県 <span className="text-amber-400">*</span>
           </label>
           <select
             required
             value={form.prefecture}
             onChange={(e) => updateField("prefecture", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400 bg-white"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
           >
             <option value="">選択してください</option>
             {PREFECTURES.map((p) => (
@@ -233,14 +233,14 @@ export default function AddPanelPage() {
             placeholder="パネルの場所や特徴を教えてください"
             value={form.description}
             onChange={(e) => updateField("description", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400 resize-none"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 resize-none"
           />
         </div>
 
         {/* Location */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            位置情報 <span className="text-pink-400">*</span>
+            位置情報 <span className="text-amber-400">*</span>
           </label>
 
           <div className="flex items-center gap-2 mb-2">
@@ -249,7 +249,7 @@ export default function AddPanelPage() {
               onClick={() => setUseCurrentLocation(true)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 useCurrentLocation
-                  ? "bg-pink-500 text-white"
+                  ? "bg-amber-500 text-white"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
@@ -260,7 +260,7 @@ export default function AddPanelPage() {
               onClick={() => setUseCurrentLocation(false)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 !useCurrentLocation
-                  ? "bg-pink-500 text-white"
+                  ? "bg-amber-500 text-white"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
@@ -306,7 +306,7 @@ export default function AddPanelPage() {
                     placeholder="例: 35.6812"
                     value={form.latitude}
                     onChange={(e) => updateField("latitude", e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
                 <div className="flex-1">
@@ -317,7 +317,7 @@ export default function AddPanelPage() {
                     placeholder="例: 139.7671"
                     value={form.longitude}
                     onChange={(e) => updateField("longitude", e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
               </div>
@@ -338,7 +338,7 @@ export default function AddPanelPage() {
             placeholder="ニックネーム（匿名でもOK）"
             value={form.contributor_name}
             onChange={(e) => updateField("contributor_name", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </div>
 
@@ -346,7 +346,7 @@ export default function AddPanelPage() {
         <button
           type="submit"
           disabled={submitting || !form.name || !form.prefecture}
-          className="w-full rounded-xl bg-pink-500 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-pink-600 active:scale-[0.98] disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none"
+          className="w-full rounded-xl bg-amber-500 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-amber-600 active:scale-[0.98] disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none"
         >
           {submitting ? (
             <span className="flex items-center justify-center gap-2">

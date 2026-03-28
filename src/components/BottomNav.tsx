@@ -28,7 +28,7 @@ export default function BottomNav() {
               href={item.href}
               className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] transition-colors ${
                 isActive
-                  ? "text-pink-500"
+                  ? "text-amber-500"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
