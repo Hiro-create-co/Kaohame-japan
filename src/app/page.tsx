@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import L from "leaflet";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { getPanels, getBestPhotos } from "@/lib/panels";
 import type { Panel } from "@/types";
@@ -37,8 +38,10 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
-  const { latitude, longitude } = useGeolocation();
+  const { latitude, longitude, loading: geoLoading, requestLocation } = useGeolocation();
   const cardScrollRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     Promise.all([getPanels(), getBestPhotos()])
@@ -82,6 +85,24 @@ export default function HomePage() {
     },
     [sortedPanels]
   );
+
+  // Go to current location
+  const handleLocate = useCallback(() => {
+    if (latitude && longitude && mapInstanceRef.current) {
+      mapInstanceRef.current.setView([latitude, longitude], 12, { animate: true });
+    } else {
+      setLocating(true);
+      requestLocation();
+    }
+  }, [latitude, longitude, requestLocation]);
+
+  // When location arrives after button press
+  useEffect(() => {
+    if (locating && latitude && longitude && mapInstanceRef.current) {
+      mapInstanceRef.current.setView([latitude, longitude], 12, { animate: true });
+      setLocating(false);
+    }
+  }, [locating, latitude, longitude]);
 
   // Handle card scroll to update selected marker
   const handleCardScroll = useCallback(() => {
@@ -149,6 +170,7 @@ export default function HomePage() {
                 : [36.5, 137.0]
             }
             zoom={latitude ? 10 : 5}
+            onMapReady={(map) => { mapInstanceRef.current = map; }}
           />
         )}
       </div>
@@ -157,6 +179,22 @@ export default function HomePage() {
       <div className="absolute left-3 top-14 z-[1000] rounded-full bg-white/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-gray-700 shadow-md">
         {panels.length} 件のパネル
       </div>
+
+      {/* Locate me button */}
+      <button
+        onClick={handleLocate}
+        className="absolute left-3 top-22 z-[1000] flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-md active:scale-95 transition-transform"
+        aria-label="現在地に移動"
+      >
+        {locating ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-rose-200 border-t-rose-600" />
+        ) : (
+          <svg className="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <circle cx="12" cy="12" r="3" />
+            <path strokeLinecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+          </svg>
+        )}
+      </button>
 
       {/* Bottom card carousel - Ezloo style */}
       {!loading && !error && panels.length > 0 && (

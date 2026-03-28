@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
 import type { Panel } from "@/types";
 
 function createPanelIcon(imageUrl?: string | null, selected?: boolean) {
@@ -37,6 +39,7 @@ interface MapViewProps {
   center?: [number, number];
   zoom?: number;
   mini?: boolean;
+  onMapReady?: (map: L.Map) => void;
 }
 
 export default function MapView({
@@ -48,10 +51,11 @@ export default function MapView({
   center,
   zoom = 5,
   mini = false,
+  onMapReady,
 }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const markersRef = useRef<Map<string, L.Marker>>(new Map());
+  const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -74,6 +78,7 @@ export default function MapView({
     });
 
     mapRef.current = map;
+    if (onMapReady) onMapReady(map);
 
     return () => {
       map.remove();
@@ -82,36 +87,78 @@ export default function MapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update markers when panels change
+  // Update markers with clustering when panels change
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || mini) return;
 
-    const newMarkers = new Map<string, L.Marker>();
+    // Remove old cluster group
+    if (clusterRef.current) {
+      map.removeLayer(clusterRef.current);
+    }
+
+    const cluster = (L as unknown as { markerClusterGroup: (opts?: object) => L.MarkerClusterGroup }).markerClusterGroup({
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      iconCreateFunction: (c: L.MarkerCluster) => {
+        const count = c.getChildCount();
+        let size = 40;
+        let fontSize = 14;
+        if (count >= 50) { size = 56; fontSize = 16; }
+        else if (count >= 20) { size = 48; fontSize = 15; }
+        return L.divIcon({
+          html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#E11D48,#BE123C);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:${fontSize}px;box-shadow:0 2px 8px rgba(225,29,72,0.4);border:3px solid white;">${count}</div>`,
+          className: "",
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        });
+      },
+    });
 
     panels.forEach((panel) => {
       const isSelected = panel.id === selectedPanelId;
       const marker = L.marker([panel.latitude, panel.longitude], {
         icon: createPanelIcon(panel.image_url, isSelected),
         zIndexOffset: isSelected ? 1000 : 0,
-      }).addTo(map);
+      });
 
       marker.on("click", (e) => {
         L.DomEvent.stopPropagation(e);
         if (onPanelSelect) onPanelSelect(panel);
       });
 
-      newMarkers.set(panel.id, marker);
+      cluster.addLayer(marker);
     });
 
-    // Cleanup old markers
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = newMarkers;
+    map.addLayer(cluster);
+    clusterRef.current = cluster;
 
     return () => {
-      newMarkers.forEach((m) => m.remove());
+      if (map.hasLayer(cluster)) {
+        map.removeLayer(cluster);
+      }
     };
-  }, [panels, selectedPanelId, onPanelSelect]);
+  }, [panels, selectedPanelId, onPanelSelect, mini]);
+
+  // Mini mode: simple markers without clustering
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mini) return;
+
+    const markers: L.Marker[] = [];
+    panels.forEach((panel) => {
+      const marker = L.marker([panel.latitude, panel.longitude], {
+        icon: createPanelIcon(panel.image_url),
+      }).addTo(map);
+      markers.push(marker);
+    });
+
+    return () => {
+      markers.forEach((m) => m.remove());
+    };
+  }, [panels, mini]);
 
   // User location marker
   useEffect(() => {
@@ -135,7 +182,7 @@ export default function MapView({
     if (!map || !selectedPanelId) return;
     const panel = panels.find((p) => p.id === selectedPanelId);
     if (panel) {
-      map.panTo([panel.latitude, panel.longitude], { animate: true });
+      map.setView([panel.latitude, panel.longitude], Math.max(map.getZoom(), 12), { animate: true });
     }
   }, [selectedPanelId, panels]);
 
