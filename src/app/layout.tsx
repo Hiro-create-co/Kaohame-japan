@@ -26,11 +26,20 @@ export const metadata: Metadata = {
     siteName: "カオハメJAPAN",
     locale: "ja_JP",
     type: "website",
+    images: [
+      {
+        url: "/ogp.jpg",
+        width: 997,
+        height: 992,
+        alt: "カオハメJAPAN",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "カオハメJAPAN",
     description: "47都道府県の顔ハメパネルを制覇しよう！",
+    images: ["/ogp.jpg"],
   },
 };
 
