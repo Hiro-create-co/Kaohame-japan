@@ -117,6 +117,87 @@ export async function getPhotosByPanel(
   return data || [];
 }
 
+// ---------- Best photo per panel (for map icon) ----------
+
+export async function getBestPhotos(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from("panel_photos")
+    .select("panel_id, image_url, like_count")
+    .order("like_count", { ascending: false });
+
+  if (error || !data) return {};
+
+  const best: Record<string, string> = {};
+  for (const photo of data) {
+    if (!best[photo.panel_id]) {
+      best[photo.panel_id] = photo.image_url;
+    }
+  }
+  return best;
+}
+
+// ---------- Photo like functions ----------
+
+const PHOTO_LIKES_KEY = "kaohame_photo_likes";
+
+function getLikedPhotoIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(PHOTO_LIKES_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setLikedPhotoIds(ids: string[]) {
+  localStorage.setItem(PHOTO_LIKES_KEY, JSON.stringify(ids));
+}
+
+export function isPhotoLiked(photoId: string): boolean {
+  return getLikedPhotoIds().includes(photoId);
+}
+
+export async function likePhoto(photoId: string): Promise<number | null> {
+  const { data: photo } = await supabase
+    .from("panel_photos")
+    .select("like_count")
+    .eq("id", photoId)
+    .single();
+
+  const newCount = (photo?.like_count || 0) + 1;
+  const { error } = await supabase
+    .from("panel_photos")
+    .update({ like_count: newCount })
+    .eq("id", photoId);
+
+  if (error) return null;
+
+  const ids = getLikedPhotoIds();
+  ids.push(photoId);
+  setLikedPhotoIds(ids);
+  return newCount;
+}
+
+export async function unlikePhoto(photoId: string): Promise<number | null> {
+  const { data: photo } = await supabase
+    .from("panel_photos")
+    .select("like_count")
+    .eq("id", photoId)
+    .single();
+
+  const newCount = Math.max((photo?.like_count || 0) - 1, 0);
+  const { error } = await supabase
+    .from("panel_photos")
+    .update({ like_count: newCount })
+    .eq("id", photoId);
+
+  if (error) return null;
+
+  const ids = getLikedPhotoIds().filter((id) => id !== photoId);
+  setLikedPhotoIds(ids);
+  return newCount;
+}
+
 // ---------- Like functions ----------
 
 const LIKES_KEY = "kaohame_likes";

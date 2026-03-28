@@ -16,6 +16,7 @@ export interface PanelPhoto {
   panel_id: string;
   image_url: string;
   user_name: string;
+  like_count: number;
   created_at: string;
 }
 

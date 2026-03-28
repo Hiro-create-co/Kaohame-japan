@@ -1,9 +1,9 @@
-const CACHE_NAME = "kaohame-v3";
+const CACHE_NAME = "kaohame-v4";
 const STATIC_ASSETS = [
-  "/",
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
+  "/ogp.jpg",
 ];
 
 self.addEventListener("install", (event) => {
@@ -25,31 +25,20 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
 
-  // Network-first for API calls and Supabase
-  if (url.includes("/api/") || url.includes("supabase")) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-    return;
-  }
+  // Skip non-GET requests
+  if (event.request.method !== "GET") return;
 
-  // Cache-first for static assets, with network fallback
+  // Network-first for everything (pages, JS, CSS, API)
+  // Only fall back to cache when offline
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response.ok && event.request.method === "GET") {
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      });
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });

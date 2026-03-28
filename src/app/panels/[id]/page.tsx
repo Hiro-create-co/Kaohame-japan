@@ -10,6 +10,9 @@ import {
   isPanelLiked,
   likePanel,
   unlikePanel,
+  isPhotoLiked,
+  likePhoto,
+  unlikePhoto,
 } from "@/lib/panels";
 import type { Panel, PanelPhoto } from "@/types";
 
@@ -379,19 +382,60 @@ export default function PanelDetailPage() {
 
             {/* Photo Grid */}
             {photos.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {photos.map((photo) => (
-                  <button
-                    key={photo.id}
-                    onClick={() => setLightboxPhoto(photo.image_url)}
-                    className="relative aspect-square overflow-hidden rounded-lg bg-gray-100"
-                  >
-                    <img
-                      src={photo.image_url}
-                      alt={`${photo.user_name}さんの写真`}
-                      className="h-full w-full object-cover transition-transform hover:scale-105"
-                    />
-                  </button>
+                  <div key={photo.id} className="rounded-lg overflow-hidden bg-gray-100 shadow-sm">
+                    <button
+                      onClick={() => setLightboxPhoto(photo.image_url)}
+                      className="relative aspect-square w-full overflow-hidden"
+                    >
+                      <img
+                        src={photo.image_url}
+                        alt={`${photo.user_name}さんの写真`}
+                        className="h-full w-full object-cover transition-transform hover:scale-105"
+                      />
+                    </button>
+                    <div className="flex items-center justify-between px-2 py-1.5 bg-white">
+                      <span className="text-[10px] text-gray-400 truncate">
+                        {photo.user_name}
+                      </span>
+                      <button
+                        onClick={async () => {
+                          const photoLiked = isPhotoLiked(photo.id);
+                          const newCount = photoLiked
+                            ? await unlikePhoto(photo.id)
+                            : await likePhoto(photo.id);
+                          if (newCount !== null) {
+                            setPhotos((prev) =>
+                              prev.map((p) =>
+                                p.id === photo.id
+                                  ? { ...p, like_count: newCount }
+                                  : p
+                              )
+                            );
+                          }
+                        }}
+                        className="flex items-center gap-0.5"
+                      >
+                        <svg
+                          className={`h-3.5 w-3.5 ${
+                            isPhotoLiked(photo.id)
+                              ? "text-rose-500"
+                              : "text-gray-300"
+                          }`}
+                          fill={isPhotoLiked(photo.id) ? "currentColor" : "none"}
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                        >
+                          <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                        <span className="text-[10px] text-gray-400">
+                          {photo.like_count || 0}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { getPanels } from "@/lib/panels";
+import { getPanels, getBestPhotos } from "@/lib/panels";
 import type { Panel } from "@/types";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
@@ -17,9 +17,13 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    getPanels()
-      .then((data) => {
-        setPanels(data);
+    Promise.all([getPanels(), getBestPhotos()])
+      .then(([panelData, bestPhotos]) => {
+        const enriched = panelData.map((p) => ({
+          ...p,
+          image_url: bestPhotos[p.id] || p.image_url,
+        }));
+        setPanels(enriched);
         setLoading(false);
       })
       .catch(() => {
