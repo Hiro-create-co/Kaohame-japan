@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function SettingsPage() {
@@ -223,6 +224,31 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* Legal */}
+        <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="mb-3 text-base font-bold text-gray-900">その他</h2>
+          <div className="space-y-1">
+            <Link
+              href="/terms"
+              className="flex items-center justify-between rounded-xl px-1 py-3 text-base text-gray-700 transition-colors active:bg-gray-50"
+            >
+              <span>利用規約</span>
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link
+              href="/privacy"
+              className="flex items-center justify-between rounded-xl px-1 py-3 text-base text-gray-700 transition-colors active:bg-gray-50"
+            >
+              <span>プライバシーポリシー</span>
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </section>
+
         {/* App Info */}
         <section className="rounded-2xl bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
@@ -235,7 +261,7 @@ export default function SettingsPage() {
               <p className="text-base font-bold text-yellow-500">
                 カオハメJAPAN
               </p>
-              <p className="text-sm text-gray-500">v0.2.0</p>
+              <p className="text-sm text-gray-500">v0.3.0</p>
             </div>
           </div>
           <p className="mt-3 text-sm text-gray-400">
