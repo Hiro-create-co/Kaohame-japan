@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { getPanels } from "@/lib/panels";
 import { PREFECTURES, REGIONS } from "@/data/prefectures";
 import { prefecturePaths } from "@/data/prefecturePaths";
@@ -23,12 +23,57 @@ function saveVisitedPanelIds(ids: Set<string>) {
   localStorage.setItem(VISITED_PANELS_KEY, JSON.stringify([...ids]));
 }
 
+// Confetti component
+function Confetti({ active }: { active: boolean }) {
+  if (!active) return null;
+  const colors = ["#EAB308", "#FACC15", "#FDE047", "#FEF08A", "#F59E0B", "#FF6B6B", "#4ECDC4", "#45B7D1"];
+  return (
+    <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+      {Array.from({ length: 60 }).map((_, i) => {
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.5;
+        const duration = 1.5 + Math.random() * 2;
+        const size = 6 + Math.random() * 8;
+        const color = colors[i % colors.length];
+        const rotate = Math.random() * 360;
+        const drift = (Math.random() - 0.5) * 40;
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: `${left}%`,
+              top: "-10px",
+              width: `${size}px`,
+              height: `${size * 0.6}px`,
+              backgroundColor: color,
+              borderRadius: "2px",
+              transform: `rotate(${rotate}deg)`,
+              animation: `confetti-fall ${duration}s ease-out ${delay}s forwards`,
+              ["--drift" as string]: `${drift}px`,
+            }}
+          />
+        );
+      })}
+      <style>{`
+        @keyframes confetti-fall {
+          0% { opacity: 1; transform: translateY(0) translateX(0) rotate(0deg); }
+          100% { opacity: 0; transform: translateY(100vh) translateX(var(--drift)) rotate(720deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function ProgressPage() {
   const [panels, setPanels] = useState<Panel[]>([]);
   const [loading, setLoading] = useState(true);
   const [visitedPanelIds, setVisitedPanelIds] = useState<Set<string>>(new Set());
   const [expandedPrefecture, setExpandedPrefecture] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [conqueredPref, setConqueredPref] = useState<string | null>(null);
   const { requireAuth } = useRequireAuth();
+  const prevConqueredRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     setVisitedPanelIds(getVisitedPanelIds());
@@ -37,6 +82,35 @@ export default function ProgressPage() {
       setLoading(false);
     });
   }, []);
+
+  // Track which prefectures were conquered before
+  useEffect(() => {
+    if (panels.length === 0) return;
+    const panelsByPref: Record<string, Panel[]> = {};
+    panels.forEach((p) => {
+      if (!panelsByPref[p.prefecture]) panelsByPref[p.prefecture] = [];
+      panelsByPref[p.prefecture].push(p);
+    });
+    const currentConquered = new Set<string>();
+    PREFECTURES.forEach((pref) => {
+      const pp = panelsByPref[pref.name];
+      if (pp && pp.length > 0 && pp.every((p) => visitedPanelIds.has(p.id))) {
+        currentConquered.add(pref.name);
+      }
+    });
+    // Detect newly conquered prefecture
+    if (prevConqueredRef.current.size > 0 || visitedPanelIds.size > 0) {
+      for (const name of currentConquered) {
+        if (!prevConqueredRef.current.has(name)) {
+          setShowConfetti(true);
+          setConqueredPref(name);
+          setTimeout(() => { setShowConfetti(false); setConqueredPref(null); }, 3500);
+          break;
+        }
+      }
+    }
+    prevConqueredRef.current = currentConquered;
+  }, [visitedPanelIds, panels]);
 
   const togglePanelVisited = useCallback((panelId: string) => {
     if (!requireAuth()) return;
@@ -82,10 +156,34 @@ export default function ProgressPage() {
   const totalVisitedPanels = visitedPanelIds.size;
   const progressPercent = Math.round((conqueredPrefectures / 47) * 100);
 
-  // Count only prefectures that have panels
-  const prefecturesWithPanels = PREFECTURES.filter(
-    (p) => (panelsByPrefecture[p.name]?.length || 0) > 0
-  ).length;
+  // Share function
+  const sharePrefecture = useCallback(async (prefName: string) => {
+    const prefPanels = panelsByPrefecture[prefName] || [];
+    const text = `🎉 ${prefName}の顔ハメパネル ${prefPanels.length}箇所 全制覇しました！\n\n#カオハメJAPAN #顔ハメパネル #${prefName}`;
+    const url = "https://kaohame-japan.vercel.app";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${prefName} 制覇！`, text, url });
+      } catch { /* user cancelled */ }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      alert("クリップボードにコピーしました！");
+    }
+  }, [panelsByPrefecture]);
+
+  const shareOverall = useCallback(async () => {
+    const text = `🏆 カオハメJAPAN ${conqueredPrefectures}/47 都道府県制覇中！\n${totalVisitedPanels}箇所のパネルを訪問済み\n\n#カオハメJAPAN #顔ハメパネル`;
+    const url = "https://kaohame-japan.vercel.app";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "カオハメJAPAN 制覇状況", text, url });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      alert("クリップボードにコピーしました！");
+    }
+  }, [conqueredPrefectures, totalVisitedPanels]);
 
   if (loading) {
     return (
@@ -97,6 +195,34 @@ export default function ProgressPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-gray-50">
+      {/* Confetti */}
+      <Confetti active={showConfetti} />
+
+      {/* Conquest celebration modal */}
+      {conqueredPref && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="mx-4 animate-bounce rounded-2xl bg-white p-6 text-center shadow-2xl" style={{ animationDuration: "0.6s", animationIterationCount: "2" }}>
+            <p className="text-5xl">🎉</p>
+            <p className="mt-3 text-xl font-bold text-gray-900">{conqueredPref} 制覇！</p>
+            <p className="mt-1 text-sm text-gray-500">全パネルを訪問しました！</p>
+            <div className="mt-4 flex gap-2 justify-center">
+              <button
+                onClick={() => sharePrefecture(conqueredPref)}
+                className="rounded-full bg-yellow-500 px-5 py-2 text-sm font-bold text-white active:scale-95 transition-transform"
+              >
+                シェアする
+              </button>
+              <button
+                onClick={() => { setConqueredPref(null); setShowConfetti(false); }}
+                className="rounded-full bg-gray-100 px-5 py-2 text-sm font-medium text-gray-600 active:scale-95 transition-transform"
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="bg-white px-4 py-4 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">制覇マップ</h1>
         <p className="text-sm text-gray-500">
@@ -120,6 +246,21 @@ export default function ProgressPage() {
             {progressPercent}% 達成 ・ {totalVisitedPanels}/{panels.length} パネル訪問済
           </p>
         </div>
+
+        {/* Share progress button */}
+        {conqueredPrefectures > 0 && (
+          <div className="mt-3 text-center">
+            <button
+              onClick={shareOverall}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium text-white active:scale-95 transition-transform"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              進捗をシェア
+            </button>
+          </div>
+        )}
 
         {conqueredPrefectures >= 47 && (
           <div className="mt-3 text-center">
@@ -238,6 +379,17 @@ export default function ProgressPage() {
                             </div>
                           )}
                         </div>
+                        {isConquered && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); sharePrefecture(pref.name); }}
+                            className="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 active:scale-90 transition-transform"
+                            aria-label="シェア"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                          </button>
+                        )}
                         {hasPanel && (
                           <svg
                             className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
