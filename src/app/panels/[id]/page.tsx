@@ -431,6 +431,42 @@ export default function PanelDetailPage() {
                       <span className="text-[10px] text-gray-400 truncate">
                         {photo.user_name}
                       </span>
+                      <div className="flex items-center gap-1.5">
+                      {/* Share photo button */}
+                      <button
+                        onClick={async () => {
+                          const shareText = `${panel.name}（${panel.prefecture}）で顔ハメ！ #カオハメJAPAN #顔ハメパネル`;
+                          const shareUrl = window.location.href;
+                          if (navigator.share) {
+                            try {
+                              // Try to share with image
+                              const response = await fetch(photo.image_url);
+                              const blob = await response.blob();
+                              const file = new File([blob], "kaohame.jpg", { type: blob.type });
+                              await navigator.share({
+                                title: panel.name,
+                                text: shareText,
+                                url: shareUrl,
+                                files: [file],
+                              });
+                            } catch {
+                              // Fallback: share without image
+                              try {
+                                await navigator.share({ title: panel.name, text: shareText, url: shareUrl });
+                              } catch { /* cancelled */ }
+                            }
+                          } else {
+                            await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+                            alert("クリップボードにコピーしました！");
+                          }
+                        }}
+                        className="p-0.5"
+                        title="この写真をシェア"
+                      >
+                        <svg className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                      </button>
                       <button
                         onClick={async () => {
                           if (!requireAuth()) return;
@@ -467,6 +503,7 @@ export default function PanelDetailPage() {
                           {photo.like_count || 0}
                         </span>
                       </button>
+                      </div>
                     </div>
                   </div>
                 ))}

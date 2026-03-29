@@ -156,17 +156,16 @@ export default function ProgressPage() {
   const totalVisitedPanels = visitedPanelIds.size;
   const progressPercent = Math.round((conqueredPrefectures / 47) * 100);
 
-  // Share function
+  // Share function - uses dedicated OGP page for rich preview
   const sharePrefecture = useCallback(async (prefName: string) => {
     const prefPanels = panelsByPrefecture[prefName] || [];
     const text = `🎉 ${prefName}の顔ハメパネル ${prefPanels.length}箇所 全制覇しました！\n\n#カオハメJAPAN #顔ハメパネル #${prefName}`;
-    const url = "https://kaohame-japan.vercel.app";
+    const url = `https://kaohame-japan.vercel.app/share/conquest/${encodeURIComponent(prefName)}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: `${prefName} 制覇！`, text, url });
       } catch { /* user cancelled */ }
     } else {
-      // Fallback: copy to clipboard
       await navigator.clipboard.writeText(`${text}\n${url}`);
       alert("クリップボードにコピーしました！");
     }
